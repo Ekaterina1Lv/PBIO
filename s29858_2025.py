@@ -91,6 +91,11 @@ def batch_mode(num_sequences: int, base_id: str, description: str,
 
     return all_records
 
+def transcribe_dna(sequenc: str) -> str:
+    """Transkrypcja DNA do mRNA."""
+    return sequenc.replace('T', 'U')
+
+
 def main():
     """Wiadomo."""
     length = validate_positive_int("Podaj długość sekwencji: ")
@@ -166,6 +171,16 @@ def main():
             f.write("\n".join(records))
 
         print(f"Zapisano {num_seq} sekwencji do {filename}")
+
+    if input("Czy wygenerować mRNA? (t/n): ").lower() == 't':
+        mrna = transcribe_dna(sequence)
+
+        print("\nmRNA:")
+        print(mrna)
+
+        with open(f"{seq_id}.fasta", "a") as f:
+            f.write("\n")
+            f.write(format_fasta(seq_id + "_mRNA", "transcription", mrna))
 
 if __name__ == "__main__":
     main()
