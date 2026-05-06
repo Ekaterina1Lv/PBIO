@@ -101,27 +101,34 @@ def transcribe_dna(sequenc: str) -> str:
 
 def main():
     """Wiadomo."""
+
+    # Pobieranie danych
     length = validate_positive_int("Podaj długość sekwencji: ")
 
     seq_id = input("Podaj ID sekwencji: ")
     seq_id = validate_id(seq_id)
 
     description = input("Podaj opis sekwencji: ")
+
+    # Walidacja name
     name = input("Podaj imię: ")
     while name.strip() == "":
         print("Imię nie może być puste.")
         name = input("Podaj imię: ")
 
+    # Generowanie sekwencji
     sequence = generate_sequence(length)
     stats = calculate_stats(sequence)
 
     sequence_with_name = insert_name(sequence, name)
 
+    # Zapisanir do pliku
     fasta_text = format_fasta(seq_id, description, sequence_with_name)
     with open(f"{seq_id}.fasta", "w") as f:
         f.write(fasta_text)
     print(f"\nSekwencja zapisana do pliku: {seq_id}.fasta\n")
 
+    # Wyświetlenie statystyk
     print(f"Statystyki sekwencji (n={length}):")
     for base in "ACGT":
         print(f"  {base}: {stats[base]:.2f}%")
@@ -129,6 +136,7 @@ def main():
 
     positions = []
 
+    # Funk 1: Wyszukiwanie motywów
     if input("Czy chcesz wyszukać motyw? (t/n): ").lower() == 't':
         motif = input("Podaj motyw do wyszukania: ").upper()
 
@@ -143,6 +151,7 @@ def main():
         else:
             print(f"Motyw '{motif}' nie występuje w sekwencji")
 
+    # Funkc 2: Sekwencja komplementarna
     if input("Czy wygenerować sekwencję komplementarną? (t/n): ").lower() == 't':
         comp_seq = complement(sequence)
         rev_comp_seq = reverse_complement(sequence)
@@ -153,6 +162,7 @@ def main():
         print("\nSekwencja odwrotnie komplementarna:")
         print(rev_comp_seq)
 
+        # Zapis do innego pliku
         with open(f"{seq_id}.fasta", "a") as f:
             f.write("\n")
             f.write(format_fasta(seq_id + "_COMP", "komplementarna", comp_seq))
@@ -160,6 +170,7 @@ def main():
             f.write("\n")
             f.write(format_fasta(seq_id + "_REVCOMP", "reverse complement", rev_comp_seq))
 
+    # Funkc 3: Batch mode
     if input("Czy uruchomić batch mode? (t/n): ").lower() == 't':
         num_seq = validate_positive_int("Ile sekwencji?: ", 1, 100)
 
@@ -175,6 +186,7 @@ def main():
 
         print(f"Zapisano {num_seq} sekwencji do {filename}")
 
+    # Funkc 4: Transkrypcja na mRNA
     if input("Czy wygenerować mRNA? (t/n): ").lower() == 't':
         mrna = transcribe_dna(sequence)
 
