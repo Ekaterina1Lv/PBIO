@@ -75,6 +75,21 @@ def complement(sequence: str) -> str:
 def reverse_complement(sequence: str) -> str:
     return complement(sequence)[::-1]
 
+def batch_mode(num_sequences: int, base_id: str, description: str,
+               seq_length: int, name: str) -> list:
+    """Generuje wiele sekwencji i zwraca listę sformatowanych rekordów FASTA."""
+    all_records = []
+    for i in range(1, num_sequences + 1):
+        seq_id = f"{base_id}_{i:03d}"
+        sequence = generate_sequence(seq_length)
+        sequence_with_name = insert_name(sequence, name)
+        record = format_fasta(seq_id, description, sequence_with_name)
+        all_records.append(record)
+
+        stats = calculate_stats(sequence)
+        print(f"\nStatystyki {seq_id}: A:{stats['A']:.1f}%...")
+
+    return all_records
 
 def main():
     """Wiadomo."""
@@ -136,6 +151,21 @@ def main():
 
             f.write("\n")
             f.write(format_fasta(seq_id + "_REVCOMP", "reverse complement", rev_comp_seq))
+
+    if input("Czy uruchomić batch mode? (t/n): ").lower() == 't':
+        num_seq = validate_positive_int("Ile sekwencji?: ", 1, 100)
+
+        base_id = input("Podaj bazowe ID: ")
+        base_id = validate_id(base_id)
+
+        records = batch_mode(num_seq, base_id, description, length, name)
+
+        filename = f"{base_id}_batch.fasta"
+
+        with open(filename, 'w') as f:
+            f.write("\n".join(records))
+
+        print(f"Zapisano {num_seq} sekwencji do {filename}")
 
 if __name__ == "__main__":
     main()
