@@ -71,6 +71,11 @@ def complement(sequence: str) -> str:
     mapping = {'A':'T','T':'A','C':'G','G':'C'}
     return ''.join(mapping[b] for b in sequence)
 
+
+def reverse_complement(sequence: str) -> str:
+    return complement(sequence)[::-1]
+
+
 def main():
     """Wiadomo."""
     length = validate_positive_int("Podaj długość sekwencji: ")
@@ -115,6 +120,22 @@ def main():
         else:
             print(f"Motyw '{motif}' nie występuje w sekwencji")
 
+    if input("Czy wygenerować sekwencję komplementarną? (t/n): ").lower() == 't':
+        comp_seq = complement(sequence)
+        rev_comp_seq = reverse_complement(sequence)
+
+        print("\nSekwencja komplementarna:")
+        print(comp_seq)
+
+        print("\nSekwencja odwrotnie komplementarna:")
+        print(rev_comp_seq)
+
+        with open(f"{seq_id}.fasta", "a") as f:
+            f.write("\n")
+            f.write(format_fasta(seq_id + "_COMP", "komplementarna", comp_seq))
+
+            f.write("\n")
+            f.write(format_fasta(seq_id + "_REVCOMP", "reverse complement", rev_comp_seq))
 
 if __name__ == "__main__":
     main()
