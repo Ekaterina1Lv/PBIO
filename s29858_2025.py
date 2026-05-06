@@ -87,7 +87,10 @@ def batch_mode(num_sequences: int, base_id: str, description: str,
         all_records.append(record)
 
         stats = calculate_stats(sequence)
-        print(f"\nStatystyki {seq_id}: A:{stats['A']:.1f}%...")
+        print(f"\nStatystyki {seq_id} (n={seq_length}):")
+        for base in "ACGT":
+            print(f"  {base}: {stats[base]:.2f}%")
+        print(f"  GC-content: {stats['gc_ratio_A']:.2f}%")
 
     return all_records
 
@@ -121,7 +124,7 @@ def main():
 
     print(f"Statystyki sekwencji (n={length}):")
     for base in "ACGT":
-        print(f"{base}: {stats[base]:.2f}%")
+        print(f"  {base}: {stats[base]:.2f}%")
     print(f"GC-content: {stats['gc_ratio_A']:.2f}%")
 
     positions = []
