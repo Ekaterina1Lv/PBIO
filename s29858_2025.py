@@ -28,7 +28,10 @@ def insert_name(sequence: str, name: str) -> str:
 def format_fasta(seq_id: str, description: str,
     sequence: str, line_width: int = 80) -> str:
     """Zwraca sformatowany rekord FASTA jako string."""
-    header = f">{seq_id} {description}".strip()
+    if description:
+        header = f">{seq_id} {description}"
+    else:
+        header = f">{seq_id}"
     lines = [sequence[i:i+line_width] for i in range(0, len(sequence), line_width)]
     return header + "\n" + "\n".join(lines) + "\n# EOF_1"
 
@@ -68,7 +71,6 @@ def complement(sequence: str) -> str:
     mapping = {'A':'T','T':'A','C':'G','G':'C'}
     return ''.join(mapping[b] for b in sequence)
 
-
 def main():
     """Wiadomo."""
     length = validate_positive_int("Podaj długość sekwencji: ")
@@ -97,26 +99,30 @@ def main():
         print(f"{base}: {stats[base]:.2f}%")
     print(f"GC-content: {stats['gc_ratio_A']:.2f}%")
 
+    positions = []
+
     if input("Czy chcesz wyszukać motyw? (t/n): ").lower() == 't':
         motif = input("Podaj motyw do wyszukania: ").upper()
-        while len(motif) == 0:
-            print("Motyw nie może być pusty!")
+
+        while len(motif) == 0 or any(base not in "ACGT" for base in motif):
+            print("Motyw może zawierać tylko A C G T!")
             motif = input("Podaj motyw: ").upper()
 
         positions = find_motif(sequence, motif)
+
         if positions:
             print(f"Motyw '{motif}' znaleziony na pozycjach: {positions}")
         else:
             print(f"Motyw '{motif}' nie występuje w sekwencji")
 
+    num_seq = validate_positive_int("Ile sekwencji?: ", 1, 100)
+    base_id = input("Podaj bazowe ID: ")
 
 
-
-
-
-
-    print("Pozycje motywu:", positions if positions else "Brak")
-
+    filename = f"{base_id}_batch.fasta"
+    with open(filename, 'w') as f:
+        f.write("\n".join(records))
+    print(f"Zapisano {num_seq} sekwencji")
 
 if __name__ == "__main__":
     main()
