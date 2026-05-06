@@ -115,14 +115,6 @@ def main():
         else:
             print(f"Motyw '{motif}' nie występuje w sekwencji")
 
-    num_seq = validate_positive_int("Ile sekwencji?: ", 1, 100)
-    base_id = input("Podaj bazowe ID: ")
-
-
-    filename = f"{base_id}_batch.fasta"
-    with open(filename, 'w') as f:
-        f.write("\n".join(records))
-    print(f"Zapisano {num_seq} sekwencji")
 
 if __name__ == "__main__":
     main()
