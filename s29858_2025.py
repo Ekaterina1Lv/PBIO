@@ -57,16 +57,36 @@ def validate_id(seq_id: str) ->str:
         seq_id = input("Podaj ID sekwencji: ")
     return seq_id
 
+def find_motif(sequence: str, motif: str) -> list:
+    positions = []
+    for i in range(len(sequence) - len(motif) + 1):
+        if sequence[i:i+len(motif)] == motif:
+            positions.append(i + 1)
+    return positions
+
+def complement(sequence: str) -> str:
+    mapping = {'A':'T','T':'A','C':'G','G':'C'}
+    return ''.join(mapping[b] for b in sequence)
+
+
 def main():
     """Wiadomo."""
     length = validate_positive_int("Podaj długość sekwencji: ")
+
     seq_id = input("Podaj ID sekwencji: ")
     seq_id = validate_id(seq_id)
+
     description = input("Podaj opis sekwencji: ")
     name = input("Podaj imię: ")
+    while name.strip() == "":
+        print("Imię nie może być puste.")
+        name = input("Podaj imię: ")
+
     sequence = generate_sequence(length)
     stats = calculate_stats(sequence)
+
     sequence_with_name = insert_name(sequence, name)
+
     fasta_text = format_fasta(seq_id, description, sequence_with_name)
     with open(f"{seq_id}.fasta", "w") as f:
         f.write(fasta_text)
@@ -75,8 +95,28 @@ def main():
     print(f"Statystyki sekwencji (n={length}):")
     for base in "ACGT":
         print(f"{base}: {stats[base]:.2f}%")
-
     print(f"GC-content: {stats['gc_ratio_A']:.2f}%")
 
-    
+    if input("Czy chcesz wyszukać motyw? (t/n): ").lower() == 't':
+        motif = input("Podaj motyw do wyszukania: ").upper()
+        while len(motif) == 0:
+            print("Motyw nie może być pusty!")
+            motif = input("Podaj motyw: ").upper()
 
+        positions = find_motif(sequence, motif)
+        if positions:
+            print(f"Motyw '{motif}' znaleziony na pozycjach: {positions}")
+        else:
+            print(f"Motyw '{motif}' nie występuje w sekwencji")
+
+
+
+
+
+
+
+    print("Pozycje motywu:", positions if positions else "Brak")
+
+
+if __name__ == "__main__":
+    main()
